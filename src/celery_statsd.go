@@ -31,8 +31,8 @@ func runLoop(redisHost string, redisPort int64, statsdHost string, statsdPort in
         Addr: fmt.Sprintf("%s:%d", redisHost, redisPort),
         DB: 10,
     })
-    _, err1 := client.Ping().Result()
-    fmt.Println("connection errors? ", err1)
+    _, connErr := client.Ping().Result()
+    fmt.Println("connection errors? ", connErr)
 
     statsdClient := statsd.NewStatsdClient(
         fmt.Sprintf("%s:%d", statsdHost, statsdPort),
@@ -45,9 +45,9 @@ func runLoop(redisHost string, redisPort int64, statsdHost string, statsdPort in
     for true {
         for _, name := range queues {
             go func(oneName string) {
-                listLength, err2 := client.LLen(oneName).Result()
+                listLength, err := client.LLen(oneName).Result()
                 stats.Gauge(oneName, listLength)
-                fmt.Println(oneName, listLength, err2)
+                fmt.Println(oneName, listLength, err)
             }(name)
         }
         time.Sleep(timeoutInterval)
