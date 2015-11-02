@@ -1,6 +1,6 @@
 ## celery-statsd
 
-A Go daemon that monitors celery queue depths.
+A Go daemon that polls celery queue depths and submits them to a statsd server as a gauge metric.
 
 ### Running
 
