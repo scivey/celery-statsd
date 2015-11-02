@@ -1,0 +1,6 @@
+.env
+*.pyc
+*.tmp
+*.log
+celerybeat-schedule
+celerybeat.pid
