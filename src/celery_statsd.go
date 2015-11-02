@@ -12,6 +12,7 @@ import (
 
 var redisHostFlag = flag.String("redis-host", "localhost", "broker host")
 var redisPortFlag = flag.Int64("redis-port", 6379, "broker port")
+var redisDbFlag = flag.Int64("redis-db", 0, "redis db number")
 var statsdHostFlag = flag.String("statsd-host", "localhost", "statsd host")
 var statsdPortFlag = flag.Int64("statsd-port", 8125, "statsd port")
 var queueNamesFlag = flag.String("queues", "celery", "comma-separated list of queue names")
@@ -22,14 +23,16 @@ func main() {
     flag.Parse()
     queueNames := strings.Split(*queueNamesFlag, ",")
     fmt.Println(queueNames)
-    runLoop(*redisHostFlag, *redisPortFlag, *statsdHostFlag, *statsdPortFlag, *statsPrefixFlag, *intervalFlag, queueNames)
+    runLoop(*redisHostFlag, *redisPortFlag, *redisDbFlag,
+            *statsdHostFlag, *statsdPortFlag, *statsPrefixFlag,
+            *intervalFlag, queueNames)
     runtime.Gosched()
 }
 
-func runLoop(redisHost string, redisPort int64, statsdHost string, statsdPort int64, statsPrefix string, interval int64, queues []string) {
+func runLoop(redisHost string, redisPort int64, redisDb int64, statsdHost string, statsdPort int64, statsPrefix string, interval int64, queues []string) {
     client := redis.NewClient(&redis.Options{
         Addr: fmt.Sprintf("%s:%d", redisHost, redisPort),
-        DB: 10,
+        DB: redisDb,
     })
     _, connErr := client.Ping().Result()
     fmt.Println("connection errors? ", connErr)
